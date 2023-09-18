@@ -1,17 +1,26 @@
 # <div align="center"><a href="#dummy"><img src="./img/HiADN_logo.png" alt="📌 HiADN"></a></div>
 
 ----------------------------------------
+<div align="center">
+
+[![Github](https://img.shields.io/badge/-Github-000?style=flat&logo=Github&logoColor=white)](https://github.com/NKUlpj)
+[![Linkedin](https://img.shields.io/badge/-LinkedIn-blue?style=flat&logo=Linkedin&logoColor=white)](https://www.hwater.site/)
+[![Gmail](https://img.shields.io/badge/-Gmail-c14438?style=flat&logo=Gmail&logoColor=white)](mailto:klstftz@gmail.com)
+
+</div>
+
+<div align="center">
+
 <p>
-<code><img width="45%" src="https://www.vectorlogo.zone/logos/python/python-ar21.svg"></code>
-<code><img width="45%" src="https://www.vectorlogo.zone/logos/pytorch/pytorch-ar21.svg"></code>
+<code><img width="20%" src="https://www.vectorlogo.zone/logos/ubuntu/ubuntu-ar21.svg"></code>
+<code><img width="20%" src="https://www.vectorlogo.zone/logos/python/python-ar21.svg"></code>
+<code><img width="20%" src="https://www.vectorlogo.zone/logos/pytorch/pytorch-ar21.svg"></code>
 </p>
 
-
-
+</div>
 
 # 🔧 Features
 
-<!-- 
 ![](./img/HiADN.png)
 
 ## Unique features of HiRDN
@@ -24,20 +33,23 @@
 
 ![TAD Detection](./img/TAD_Compare.png)
 
-## Navigation
-1. [Installation](#installation)
-   - [Requires](#requires)
-   - [Install](#clone-or-download)
-2. [Data Preprocessing](#data-preprocessing)
-   - [Set work directory](#set-work-directory)
-   - [Read the raw data](#read-the-raw-data)
-   - [Down_sample the data](#downsample-the-data)
-   - [Generate train, validation and test datasets](#generate-train-validation-and-test-datasets)
-   - [Use own data for training](#prepare-npz-data)
-3. [Train](#training)
-4. [Predict](#predict)
-5. [Visualization](#visualization)
- -->
+
+* [👥 User Guide](#-user-guide)
+   - [1. Install](#1-installation)
+   - [2. Requires](#2-requires)
+   - [3. Data Preprocessing](#3-data-preprocessing)
+      - [3.1 set-work-directory](#31-set-work-directory)
+      - [3.2 read-the-raw-data](#32-read-the-raw-data)
+      - [3.3 down_sample-the-data](#33-down_sample-the-data)
+      - [3.4 generate-train-validation-and-test-datasets](#34-generate-train-validation-and-test-datasets)
+        - [prepare-npz-data](#prepare-npz-data)
+   - [4. training](#4-training)
+   - [5. predict](#5-predict)
+      - [5.1 predict-on-down_sample-data](#51-predict-on-down_sample-data)
+      - [5.2 predict-on-matrix](#52-predict-on-matrix)
+   - [6. visualization](#6-visualization)
+* [📚 Appendix](#-appendix)
+* [👷 Acknowledgement](#-acknowledgement)
 
 
 # 👥 User Guide
