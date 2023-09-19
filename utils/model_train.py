@@ -29,7 +29,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 
 def __set_up(seed=3407):
-    # "3407 is all you need". 3407 is not a specials number.
+    # "3407 is all you need". ^_^ 3407 is not a specials number.
     # The seed is set to ensure that our results can be reproduced.
     os.environ['PYTHONHASHSEED'] = str(seed)
     torch.manual_seed(seed)
