@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 """
-@Project: HiRDN 
+@Project: HiADN
 @File: read_data.py
 @Author: nkul
 @Date: 2023/5/13 上午11:11 

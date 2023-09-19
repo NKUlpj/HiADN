@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 """
-@Project: HiRDN 
+@Project: HiADN
 @File: Attention.py
 @Author: nkul
 @Date: 2023/4/12 下午3:05

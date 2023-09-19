@@ -23,7 +23,7 @@
 
 ![](./img/HiADN.png)
 
-## Unique features of HiRDN
+## Unique features of HiADN
 ![](./img/Compare.png)
 * todo
 * todo
@@ -107,7 +107,7 @@ root_dir = 'Datasets_NPZ'  # Example of root directory name
 ii. Make a new directory named `raw` to store raw data.
 
 ```shell
-makedir $root_dir/raw
+mkdir $root_dir/raw
 ```
 
 iii. Download and Unzip data into the `$root_dir/raw` directory. 
@@ -300,7 +300,7 @@ Datasets_NPZ
 
 ---
 <b> 💗  If you want to use your own data for training</b>
-* `makedir $root_dir/mat/<cell_name>`
+* `mkdir $root_dir/mat/<cell_name>`
 
 #### prepare .npz data
 >__Note__  
@@ -362,14 +362,14 @@ usage: train.py -m MODEL -t TRAIN_FILE -v VALID_FILE [-e EPOCHS] [-b BATCH_SIZE]
 
 Training the models
 --------------------------------------------------------------------------------------------
-Use example : python train.py -m HiRDN -t c64_s64_train.npz -v c64_s64_valid.npz -e 50 -b 32
+Use example : python train.py -m HiADN -t c64_s64_train.npz -v c64_s64_valid.npz -e 50 -b 32
 --------------------------------------------------------------------------------------------
 
 optional arguments:
   --help, -h        Print this help message and exit
 
 Miscellaneous Arguments:
-  -m MODEL          Required: models[HiRDN_T(or HiRDN), HiRDN_L, HiCARN, DeepHiC, HiCSR, HiCNN]
+  -m MODEL          Required: models[HiADN, HiCARN, DeepHiC, HiCSR, HiCNN]
   -t TRAIN_FILE     Required: training file[example: c64_s64_train.npz]
   -v VALID_FILE     Required: valid file[example: c64_s64_valid.npz]
   -e EPOCHS         Optional: max epochs[example:50]
@@ -400,14 +400,14 @@ usage: predict.py -m MODEL -t PREDICT_FILE [-b BATCH_SIZE] -ckpt CKPT [--help]
 
 Predict
 --------------------------------------------------------------------------------------------------
-Use example : python predict.py -m HiRDN -t c64_s64_GM12878_test.npz -b 64 -ckpt best_ckpt.pytorch
+Use example : python predict.py -m HiADN -t c64_s64_GM12878_test.npz -b 64 -ckpt best_ckpt.pytorch
 --------------------------------------------------------------------------------------------------
 
 optional arguments:
   --help, -h       Print this help message and exit
 
 Miscellaneous Arguments:
-  -m MODEL         Required: models[HiRDN, HiCARN, DeepHiC, HiCSR, HICNN]
+  -m MODEL         Required: models[HiADN, HiCARN, DeepHiC, HiCSR, HICNN]
   -t PREDICT_FILE  Required: predicting file[example: c64_s64_GM12878_test.npz]
   -b BATCH_SIZE    Optional: batch_size[example:64]
   -ckpt CKPT       Required: Checkpoint file[example:best.pytorch]
@@ -415,7 +415,7 @@ Miscellaneous Arguments:
 ```
 
 ### 5.2 Predict on matrix
-1. `makedir $root/mat/{your cell_line}`
+1. `mkdir $root/mat/{your cell_line}`
 2. Put your `chr{num}_{resolution}.npz` file in above dir
 3. run shell `python ./data/split_matrix.py -h` to generate data for predict
 
@@ -498,5 +498,5 @@ hic_matrix = np.load("path/to/file.npz", allow_pickle=True)['hic']
 We thank for some wonderful repo, including
 1. [DeepHiC](https://github.com/omegahh/DeepHiC) : some code for data processing.
     * utils/io_helper.py
-2. [RFDN](https://github.com/njulj/RFDN): some code for backbone of HiRDN
+2. [RFDN](https://github.com/njulj/RFDN): some code for backbone of HiADN
    * models/common.py

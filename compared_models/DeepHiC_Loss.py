@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 """
-@Project: HiRDN
+@Project: HiADN
 @File: DeepHiC_Loss.py
 @Author: nkul
 @Date: 2023/4/10 下午1:20

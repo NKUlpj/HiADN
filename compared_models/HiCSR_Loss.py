@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 """
-@Project: HiRDN 
+@Project: HiADN
 @File: HiCSR_Loss.py
 @Author: nkul
 @Date: 2023/4/28 下午3:09

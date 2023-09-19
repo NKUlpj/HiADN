@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 """
-@Project: HiRDN 
+@Project: HiADN
 @File: __init__.py.py
 @Author: nkul
 @Date: 2023/5/15 下午3:09 

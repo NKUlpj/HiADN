@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 """
-@Project: HiRDN
+@Project: HiADN
 @File: parser_helper.py
 @Author: nkul
 @Date: 2023/4/10 下午12:30
@@ -223,7 +223,7 @@ def model_train_parser():
         description=textwrap.dedent('''\
             Training the models
             --------------------------------------------------------------------------------------------
-            Use example : python train.py -m HiRDN -t c64_s64_train.npz -v c64_s64_valid.npz -e 50 -b 32
+            Use example : python train.py -m HiADN -t c64_s64_train.npz -v c64_s64_valid.npz -e 50 -b 32
             --------------------------------------------------------------------------------------------
         '''
                                     ),
@@ -234,9 +234,9 @@ def model_train_parser():
     misc_args.add_argument(
         '-m',
         dest='model',
-        help='Required: models[HiRDN_T(or HiRDN), HiRDN_L, HiCARN, DeepHiC, HiCSR, HiCNN]',
+        help='Required: models[HiADN, HiCARN, DeepHiC, HiCSR, HiCNN]',
         required=True,
-        default="HiRDN"
+        default="HiADN"
     )
     misc_args.add_argument(
         '-t',
@@ -284,7 +284,7 @@ def model_predict_parser():
         description=textwrap.dedent('''\
             Predict
             --------------------------------------------------------------------------------------------------
-            Use example : python predict.py -m HiRDN -t c64_s64_GM12878_test.npz -b 64 -ckpt best_ckpt.pytorch
+            Use example : python predict.py -m HiADN -t c64_s64_GM12878_test.npz -b 64 -ckpt best_ckpt.pytorch
             --------------------------------------------------------------------------------------------------
         '''
                                     ),
@@ -295,9 +295,9 @@ def model_predict_parser():
     misc_args.add_argument(
         '-m',
         dest='model',
-        help='Required: models[HiRDN_T(or HiRDN), HiRDN_L, HiCARN, DeepHiC, HiCSR, HiCNN]',
+        help='Required: models[HiADN, HiCARN, DeepHiC, HiCSR, HiCNN]',
         required=True,
-        default="HiRDN"
+        default="HiADN"
     )
     misc_args.add_argument(
         '-t',

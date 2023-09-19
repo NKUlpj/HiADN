@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 """
-@Project: HiRDN 
+@Project: HiADN
 @File: NumpyToCooler.py
 @Author: nkul
 @Date: 2023/5/18 下午12:42 

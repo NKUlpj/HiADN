@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 """
-@Project: HiRDN 
-@File: HiRDN_Loss.py
+@Project: HiADN
+@File: HiADN_Loss.py
 @Author: nkul
 @Date: 2023/4/24 下午12:00 
 """

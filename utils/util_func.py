@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 """
-@Project: HiRDN
+@Project: HiADN
 @File: util_func.py
 @Author: nkul
 @Date: 2023/4/10 下午2:07
@@ -23,8 +23,8 @@ import compared_models.HiCARN_1_Loss as HiCARN_1_Loss
 import compared_models.DeepHiC_Loss as DeepHiC_Loss
 import compared_models.HiCSR_Loss as HiCSR_Loss
 
-import models.HiRDN as HiRDN
-import models.HiRDN_Loss as HiRDN_Loss
+import models.HiADN as HiADN
+import models.HiADN_Loss as HiADN_Loss
 
 import logging
 from utils.config import set_log_config, root_dir
@@ -37,11 +37,8 @@ def get_model(_model_name):
     _netG = None
     _netD = None
 
-    if _model_name == 'HiRDN' or _model_name == 'HiRDN_T':
-        _netG = HiRDN.HiRDN()
-
-    elif _model_name == 'HiRDN_L':
-        _netG = HiRDN.HiRDN()
+    if _model_name == 'HiADN':
+        _netG = HiADN.HiADN()
 
     elif _model_name == 'HiCARN':
         _netG = HiCARN.Generator(num_channels=64)
@@ -116,9 +113,9 @@ def get_d_loss_fn(_model_name):
 
 
 def get_loss_fn(_model_name, device='cpu'):
-    if _model_name == 'HiRDN':
+    if _model_name == 'HiADN':
         logging.debug('Using HiRDN_Loss')
-        loss = HiRDN_Loss.LossL(device=device)
+        loss = HiADN_Loss.LossL(device=device)
     elif _model_name == 'DeepHiC':
         logging.debug('Using DeepHiC_Loss')
         loss = DeepHiC_Loss.GeneratorLoss()

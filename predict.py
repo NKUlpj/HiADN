@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 """
-@Project: HiRDN
+@Project: HiADN
 @File: predict.py
 @Author: nkul
 @Date: 2023/4/10 下午2:00

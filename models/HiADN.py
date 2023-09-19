@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 """
-@Project: HiRDN
-@File: HiRDN.py
+@Project: HiADN
+@File: HiADN.py
 @Author: nkul
 @Date: 2023/4/10 下午1:56
 """
@@ -13,9 +13,9 @@ from models.Component import HiAB
 from models.Attention import ESA
 
 
-class HiRDN(nn.Module):
+class HiADN(nn.Module):
     def __init__(self, in_channels=1, out_channels=1) -> None:
-        super(HiRDN, self).__init__()
+        super(HiADN, self).__init__()
         _hidden_channels = 32
         _block_num = 7
         self.fea_conv = nn.Conv2d(in_channels, _hidden_channels, 3, padding='same')
@@ -54,4 +54,3 @@ class HiRDN(nn.Module):
         out_lr = self.attn(out_lr)
         output = self.exit(out_lr)
         return output
-

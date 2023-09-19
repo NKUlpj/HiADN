@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 """
-@Project: HiRDN 
+@Project: HiADN
 @File: visual.py
 @Author: nkul
 @Date: 2023/5/8 下午2:20 

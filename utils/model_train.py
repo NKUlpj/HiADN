@@ -1,5 +1,5 @@
 """
-@Project: HiRDN
+@Project: HiADN
 @File: model_train.py
 @Author: nkul
 @Date: 2023/4/10 下午2:12

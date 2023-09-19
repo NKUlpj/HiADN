@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 """
-@Project: HiRDN 
+@Project: HiADN
 @File: dataConvert.py
 @Author: nkul
 @Date: 2023/5/15 下午4:12 
