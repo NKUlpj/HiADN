@@ -45,7 +45,7 @@ class HiADN(nn.Module):
 
         out_b5 = self.b5(out_b4)
         out_b6 = self.b6(out_b5)
-        out_b7 = self.b6(out_b6)
+        out_b7 = self.b7(out_b6)
 
         out_b = self.c(torch.cat([out_b1, out_b2, out_b3, out_b4, out_b5, out_b6, out_b7], dim=1))
 

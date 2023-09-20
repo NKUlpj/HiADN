@@ -20,7 +20,7 @@
 </div>
 
 # 🔧 Features
-![`Workflow of HiADN`](./img/framework.png)
+![`Workflow of HiADN`](./img/HiADN_Framework.png)
 
 ---
 
