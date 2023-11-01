@@ -21,18 +21,18 @@ from utils.config import set_log_config, root_dir, set_dict, set_lr_cutoff
 set_log_config()
 
 
-def __data_divider(_n, h_file, d_file, _chunk=32, _stride=32, _bound=301, _lr_cutoff=100, _hr_cutoff=255):
+def __data_divider(_n, h_file, d_file, _chunk=40, _stride=40, _bound=201, _lr_cutoff=100, _hr_cutoff=255):
     high_data = np.load(h_file, allow_pickle=True)
     down_data = np.load(d_file, allow_pickle=True)
 
     high_hic = high_data['hic']
     down_hic = down_data['hic']
-    compact_idx = high_data['compact']
+    # compact_idx = high_data['compact']
     full_size = high_hic.shape[0]
 
     # Compacting
-    high_hic = compact_matrix(high_hic, compact_idx)
-    down_hic = compact_matrix(down_hic, compact_idx)
+    # high_hic = compact_matrix(high_hic, compact_idx)
+    # down_hic = compact_matrix(down_hic, compact_idx)
 
     # Clamping
     high_hic = np.minimum(_hr_cutoff, high_hic)
@@ -40,7 +40,7 @@ def __data_divider(_n, h_file, d_file, _chunk=32, _stride=32, _bound=301, _lr_cu
 
     # Rescaling
     high_hic = high_hic / np.max(high_hic)
-    down_hic = down_hic / _lr_cutoff
+    down_hic = down_hic / np.max(down_hic)
 
     # Split down sampled data
     div_d_hic, div_index = divide(down_hic, _n, _chunk, _stride, _bound)
@@ -49,7 +49,7 @@ def __data_divider(_n, h_file, d_file, _chunk=32, _stride=32, _bound=301, _lr_cu
 
     # Split high data
     div_h_hic, _ = divide(high_hic, _n, _chunk, _stride, _bound, verbose=True)
-    return _n, div_d_hic, div_h_hic, div_index, compact_idx, full_size
+    return _n, div_d_hic, div_h_hic, div_index, full_size
 
 
 if __name__ == '__main__':
@@ -89,8 +89,7 @@ if __name__ == '__main__':
     data = np.concatenate([r[1] for r in results])
     target = np.concatenate([r[2] for r in results])
     inds = np.concatenate([r[3] for r in results])
-    compacts = {r[0]: r[4] for r in results}
-    sizes = {r[0]: r[5] for r in results}
+    sizes = {r[0]: r[4] for r in results}
 
     filename = f'{cell_line}_c{chunk}_s{stride}_b{bound}_r{ratio}_{postfix}.npz'
     split_file = os.path.join(out_dir, filename)
@@ -98,7 +97,6 @@ if __name__ == '__main__':
         split_file,
         data=data,
         target=target,
-        compacts=compacts,
         inds=inds,
         sizes=sizes)
     logging.debug(f'Saving file:{split_file}')

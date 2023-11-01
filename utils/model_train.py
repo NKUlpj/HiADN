@@ -29,7 +29,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 
 def __set_up(seed=3407):
-    # "3407 is all you need". ^_^ 3407 is not a specials number.
+    # "3407 is all you need". 3407 is not a specials number.
     # The seed is set to ensure that our results can be reproduced.
     os.environ['PYTHONHASHSEED'] = str(seed)
     torch.manual_seed(seed)
@@ -40,7 +40,7 @@ def __set_up(seed=3407):
     random.seed(seed)
 
     # using a deterministic cuda
-    # torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.deterministic = True
 
 
 def __adjust_learning_rate(epoch):
@@ -55,7 +55,7 @@ def __eval_dists(x, y, loss_fn):
 
 def __train(model, model_name, train_loader, valid_loader, max_epochs, verbose):
     # step 1: initial
-    __set_up()
+    # __set_up()
     _log_time = time.strftime("%Y_%m_%d_%H_%M_%S", time.localtime())
     out_dir = os.path.join(root_dir, 'checkpoints')
     os.makedirs(out_dir, exist_ok=True)
@@ -66,6 +66,7 @@ def __train(model, model_name, train_loader, valid_loader, max_epochs, verbose):
     start = time.time()
     device = get_device()  # whether using GPU for training
     best_ssim = 0
+    best_psnr = 0
 
     # step 2: load model
     net = model.to(device)
@@ -78,7 +79,7 @@ def __train(model, model_name, train_loader, valid_loader, max_epochs, verbose):
     dists_fn = DISTS()
     dists_fn.to(device)
 
-    # _optimizer = optim.Adam(net.parameters(), lr=1e-4)
+    # _optimizer = optim.Adam(net.parameters(), lr=3e-4)
     # _scheduler = CosineAnnealingLR(_optimizer, max_epochs)
 
     # step 4: start train
@@ -150,12 +151,18 @@ def __train(model, model_name, train_loader, valid_loader, max_epochs, verbose):
         this_psnr = val_res['psnr']
         this_ssim = val_res['ssims'] / val_res['samples']
         this_dists = val_res['dists'] / val_res['samples']
-        if this_ssim > best_ssim:
-            best_ssim = this_ssim
+        if this_psnr > best_psnr:
+            best_psnr = this_psnr
             print(
-                f'Update SSIM ===> '
+                f'Update PSRN ===> '
                 f'PSNR: {this_psnr:.6f} dB; SSIM: {this_ssim:.6f}; DISTS: {this_dists:.6f};')
             torch.save(net.state_dict(), best_ckpt)
+        # if this_ssim > best_ssim:
+        #     best_ssim = this_ssim
+        #     print(
+        #         f'Update SSIM ===> '
+        #         f'PSNR: {this_psnr:.6f} dB; SSIM: {this_ssim:.6f}; DISTS: {this_dists:.6f};')
+        #     torch.save(net.state_dict(), best_ckpt)
 
         if verbose:
             _val_writer.add_scalar(tag=f'loss', scalar_value=val_res['g_loss'] / val_res['samples'],

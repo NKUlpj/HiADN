@@ -56,16 +56,16 @@ class HiCBAM(nn.Module):
 class LKA(nn.Module):
     def __init__(self, channels):
         super(LKA, self).__init__()
-        self.conv0 = nn.Conv2d(channels, channels, 7, padding='same', groups=channels)
-        self.conv_spatial = nn.Conv2d(channels, channels, 13, stride=1, padding='same', groups=channels, dilation=3)
+        self.conv0 = nn.Conv2d(channels, channels, 9, padding='same', groups=channels)
+        self.conv_spatial = nn.Conv2d(channels, channels, 15, stride=1, padding='same', groups=channels, dilation=3)
         self.conv1 = nn.Conv2d(channels, channels, 1)
 
     def forward(self, x):
-        u = x.clone()
+        # u = x.clone()
         attn = self.conv0(x)
         attn = self.conv_spatial(attn)
         attn = self.conv1(attn)
-        return u * attn
+        return x * attn
 
 
 class ESA(nn.Module):

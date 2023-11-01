@@ -19,10 +19,19 @@ def __numpy_to_cooler(_in_file, _out_file, _res, _chr):
     _chrom_sizes = pd.DataFrame(_lst).set_index('name')['length']
     _bins = cooler.binnify(_chrom_sizes, _res)
     _iterator = ArrayLoader(_bins, _heatmap, chunksize=int(1e6))
-    cooler.create_cooler(_out_file, _bins, _iterator, dtypes={"count": "float"}, assembly="hg19")
+    cooler.balance = False
+    cooler.create_cooler(_out_file, _bins, _iterator, dtypes={"count": "float"}, assembly="hg38", )
+
 
 
 if __name__ == '__main__':
-    in_file = '/home/nkul/Desktop/SR/16/r16_chr4.npz'
-    out_file = './r16_chr4.cool'
-    __numpy_to_cooler(in_file, out_file, _res=10000, _chr=4)
+    base = '/home/nkul/Desktop/ex2/'
+
+    for m in ['DeepHiC', 'HiCARN', 'HiCNN', 'HiCSR', 'HiCSR', 'HR', 'LR']:
+        for ch in [4, 14, 16, 20]:
+            for r in [16, 32, 100]:
+                in_file = base + m + '/GM12878_r' + str(r) + '_chr' + str(ch) + '.npz'
+                print(in_file)
+                out_file = base + m  + '/cool/r' + str(r) + '_chr' + str(ch) + '.cool'
+                print(out_file)
+                __numpy_to_cooler(in_file, out_file, _res=10000, _chr=4)

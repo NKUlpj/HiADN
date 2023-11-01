@@ -23,10 +23,12 @@ class LossL(nn.Module):
     def __init__(self, device):
         super().__init__()
         self.device = device
-        self.ms_ssim_l1_loss = MS_SSIM_L1_LOSS(device=device, alpha=0.84, weight=1)
+        self.ms_ssim_l1_loss = MS_SSIM_L1_LOSS(device=device, alpha=0.04, weight=1)
         self.vgg_loss = VGG_Loss(weight=0.01, layer=8)
+        # self.l1 = nn.L1Loss(size_average=True)
 
     def forward(self, out_images, target_images):
+        # return self.l1(out_images, target_images)
         vgg_sr = out_images.repeat([1, 3, 1, 1])
         vgg_hr = target_images.repeat([1, 3, 1, 1])
         perception_loss = self.vgg_loss(vgg_sr, vgg_hr)
@@ -40,7 +42,7 @@ class MS_SSIM_L1_LOSS(nn.Module):
     Paper "Loss Functions for Image Restoration With Neural Networks"
     """
 
-    def __init__(self, device, data_range=1.0, alpha=0.84, weight=1., channel=1):
+    def __init__(self, device, data_range=1.0, alpha=0.04, weight=1., channel=1):
         super(MS_SSIM_L1_LOSS, self).__init__()
         k = (0.01, 0.03)
         gaussian_sigmas = [0.5, 1.0, 2.0, 4.0, 8.0]
