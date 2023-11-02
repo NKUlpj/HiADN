@@ -184,7 +184,7 @@ def __train(model, model_name, train_loader, valid_loader, max_epochs, verbose):
 
 def __train_gan(_net_g, _net_d, model_name, train_loader, valid_loader, max_epochs, verbose):
     # step 1: initial
-    __set_up()
+    # __set_up()
     _log_time = time.strftime("%Y_%m_%d_%H_%M_%S", time.localtime())
     out_dir = os.path.join(root_dir, 'checkpoints')
     os.makedirs(out_dir, exist_ok=True)

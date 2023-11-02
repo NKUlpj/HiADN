@@ -302,35 +302,36 @@ Datasets_NPZ
 </details>
 
 ---
+======================================
+
 <b> 💗  If you want to use your own data for training</b>
 * `mkdir $root_dir/mat/<cell_name>`
 
 #### prepare .npz data
 >__Note__  
-> Most common Hi-C file formats, such as [`.cool`](https://github.com/open2c/cooler) and [`.hic`](https://github.com/aidenlab/straw)
+> Most common Hi-C file formats, such as [`.cool(.mcool)`](https://github.com/open2c/cooler) and [`.hic`](https://github.com/aidenlab/straw)
 > can be easily converted to numpy matrix.
 > Other formats can be converted into transition formats using [`HiCExplorer`](https://hicexplorer.readthedocs.io/en/latest/content/tools/hicConvertFormat.html) to generate numpy matrices.
 
 
-
->__Warning__  
-> Data in following instruction is just for showing how to process your data. They cannot be used because the size of mat is too small to divide.</i>
 ```python
-# asumming that 'mat' is a two-dimensional numpy.ndarray which stores the Hi-C matrix.
+# here is a python code for read cool to npz file
+# cooler version: 0.9.2
+import cooler
 import numpy as np
-mat = np.array([[3, 2, 0, 7, 0, 0, 5, 2], 
-                   [2, 2, 0, 5, 0, 0, 3, 4], 
-                   [0, 0, 0, 0, 0, 0, 0, 0], 
-                   [7, 5, 0, 7, 0, 0, 6, 4], 
-                   [0, 0, 0, 0, 0, 0, 0, 0], 
-                   [0, 0, 0, 0, 0, 0, 0, 0], 
-                   [5, 3, 0, 6, 0, 0, 3, 3], 
-                   [2, 4, 0, 4, 0, 0, 3, 5]])
 
-# output_filename should be like `chr1_10kb.npz`
-output_filename = 'chr1_10kb.npz'
-# key must be `hic`
-np.savez_compressed(output_filename, hic=mat)
+# the filename of cooler is 4DNFI18UHVRO.mcool
+# ::resolutions/10000 is required by cooler package 
+c = cooler.Cooler('./4DNFI18UHVRO.mcool::resolutions/10000')
+
+# chromosome list[1, ..., 20]
+for i in range(1, 21):
+    print(i)
+    matrix = c.matrix(balance=False).fetch("chr" + str(i), "chr" + str(i))
+    # `hic` is the key required by HiADN
+    np.savez_compressed('K562_chr' + str(i) + '_10kb.npz', hic = matrix)
+
+# print(type(matrix))
 ```
 
 * move your `.npz` data into `$root_dir/mat/<cell_name>/`
@@ -386,7 +387,7 @@ If using arguments `-verbose`, run shell
 ```shell
 tensorboard --logdir ./Datasets_NPZ/logs/ --port=<your port>
 ```
-Now you can use visualization in Browser to observe changes in indicators during model training
+Now you can use visualization in Browser[Google Chrome] to observe changes in indicators during model training
 
 ![](./img/tensorboard.png)
 
@@ -397,7 +398,7 @@ We provide pretrained weights for ours models and all other compared models. You
 ### 5.1 predict on down_sample data
 These datasets are obtained by down_sampling, so they have corresponding targets.
 
-But this data has never been put into the model before【Just for test and comparison】.
+But this data has never been put into the model before [`Just for test and comparison`].
 ```text
 usage: predict.py -m MODEL -t PREDICT_FILE [-b BATCH_SIZE] -ckpt CKPT [--help]
 
@@ -422,7 +423,7 @@ Miscellaneous Arguments:
 2. Put your `chr{num}_{resolution}.npz` file in above dir
 3. run shell `python ./data/split_matrix.py -h` to generate data for predict
 
-```shell
+```text
 usage: split_matrix.py -c CELL_LINE -chunk CHUNK -stride STRIDE -bound BOUND [--help]
 
 A tools to generate data for predict.
@@ -452,14 +453,14 @@ usage: visualization.py -f FILE -s START -e END [-p PERCENTILE] [-c CMAP] [-n NA
 
 Visualization
 --------------------------------------------------------------------------------------------------
-Use example : python ./visual.py -f hic_matrix.npz -s 14400 -e 14800 -p 95 -c 'Reds'
+Use example : python ./visual.py -f hic_matrix.npz -s 14400 -e 14800 -p 95 -c Reds
 --------------------------------------------------------------------------------------------------
 
 optional arguments:
   --help, -h     Print this help message and exit
 
 Miscellaneous Arguments:
-  -f FILE        Required: a npy file out from predict
+  -f FILE        Required: a npz file out from predict
   -s START       Required: start bin[example: 14400]
   -e END         Required: end bin[example: 14800]
   -p PERCENTILE  Optional: percentile of max, the default is 95.
