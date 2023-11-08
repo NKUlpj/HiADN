@@ -4,7 +4,7 @@
 <div align="center">
 
 [![Github](https://img.shields.io/badge/-Github-000?style=flat&logo=Github&logoColor=white)](https://github.com/NKUlpj)
-[![Linkedin](https://img.shields.io/badge/-LinkedIn-blue?style=flat&logo=Linkedin&logoColor=white)](https://www.hwater.site/)
+[![Linkedin](https://img.shields.io/badge/-LinkedIn-blue?style=flat&logo=Linkedin&logoColor=white)](http://bio.nankai.edu.cn/)
 [![Gmail](https://img.shields.io/badge/-Gmail-c14438?style=flat&logo=Gmail&logoColor=white)](mailto:klstftz@gmail.com)
 
 </div>
@@ -28,9 +28,9 @@
 
 ## Unique features of HiADN
 ![](./img/Compare.png)
-* todo
-* todo
-* todo
+* Light-weight model
+* HiFM
+* LKA
 
 ![Compute Times](./img/Compare_Params.png)
 
