@@ -17,7 +17,7 @@ class HiADN(nn.Module):
     def __init__(self, in_channels=1, out_channels=1) -> None:
         super(HiADN, self).__init__()
         _hidden_channels = 48
-        _block_num = 4
+        _block_num = 5
         self.fea_conv = nn.Conv2d(in_channels, _hidden_channels, 3, padding='same')
 
         # HiAB
@@ -25,10 +25,11 @@ class HiADN(nn.Module):
         self.b2 = HiAB(channels=_hidden_channels)
         self.b3 = HiAB(channels=_hidden_channels)
         self.b4 = HiAB(channels=_hidden_channels)
-
+        self.b5 = HiAB(channels=_hidden_channels)
         # reduce channels
         self.c = conv_block(_hidden_channels * _block_num, _hidden_channels, kernel_size=1, act_type='lrelu')
         self.LR_conv = nn.Conv2d(_hidden_channels, _hidden_channels, 3, padding='same')
+        # self.LR_conv = conv_block(_hidden_channels, _hidden_channels, kernel_size=3, act_type='lrelu')
         self.attn = PA(channels=_hidden_channels)
         self.exit = nn.Conv2d(_hidden_channels, out_channels, kernel_size=3, stride=1, padding='same')
 
@@ -39,10 +40,11 @@ class HiADN(nn.Module):
         out_b2 = self.b2(out_b1 + out_fea)
         out_b3 = self.b3(out_b2 + out_b1)
         out_b4 = self.b4(out_b3 + out_b2)
+        out_b5 = self.b5(out_b4 + out_b3)
 
-        out_b = self.c(torch.cat([out_b1, out_b2, out_b3, out_b4], dim=1))
+        out_b = self.c(torch.cat([out_b1, out_b2, out_b3, out_b4, out_b5], dim=1))
 
-        out_lr = self.LR_conv(out_b) + out_fea
+        out_lr = self.LR_conv(out_b)
 
         out_lr = self.attn(out_lr)
         output = self.exit(out_lr)

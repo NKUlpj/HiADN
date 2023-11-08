@@ -1,133 +1,77 @@
 # -*- coding: UTF-8 -*-
 """
-@Project: HiADN
+@Project: HiADN 
 @File: HiADN_Loss.py
 @Author: nkul
-@Date: 2023/4/24 下午12:00 
+@Date: 2023/11/3 下午4:00 
+@GitHub: https://github.com/nkulpj
 """
+import os
 import torch
 import torch.nn as nn
+import math
 import torch.nn.functional as F
 from torchvision.models.vgg import vgg16
-import warnings
-
-warnings.filterwarnings("ignore")
 
 
-class LossL(nn.Module):
-    """
-    Loss_L = [r1 * vgg(3) + r2 * vgg(8) + r3 * vgg(15)] + alpha * dists_loss + beta * MS_SSIM_L1_LOSS
-    MS_SSIM_L1_LOSS = beta1 * loss_ms_ssim + (1 - beta1) * gaussian_l1
-    """
+# Code from HiCSR
+class DAE(nn.Module):
+    def __init__(self, num_layers=5, num_features=64):
+        super(DAE, self).__init__()
+        self.num_layers = num_layers
+        conv_layers = []
+        deconv_layers = []
 
-    def __init__(self, device):
-        super().__init__()
-        self.device = device
-        self.ms_ssim_l1_loss = MS_SSIM_L1_LOSS(device=device, alpha=0.04, weight=1)
-        self.vgg_loss = VGG_Loss(weight=0.01, layer=8)
-        # self.l1 = nn.L1Loss(size_average=True)
+        conv_layers.append(
+            nn.Sequential(
+                nn.Conv2d(1, num_features, kernel_size=3, stride=2, padding=1),
+                nn.ReLU(inplace=True)
+            )
+        )
+        for i in range(num_layers - 1):
+            conv_layers.append(
+                nn.Sequential(
+                    nn.Conv2d(num_features, num_features, kernel_size=3, padding=1),
+                    nn.ReLU(inplace=True)
+                )
+            )
 
-    def forward(self, out_images, target_images):
-        # return self.l1(out_images, target_images)
-        vgg_sr = out_images.repeat([1, 3, 1, 1])
-        vgg_hr = target_images.repeat([1, 3, 1, 1])
-        perception_loss = self.vgg_loss(vgg_sr, vgg_hr)
-        ms_ssim_l1_loss = self.ms_ssim_l1_loss(out_images, target_images)
-        return ms_ssim_l1_loss + perception_loss
+        for i in range(num_layers - 1):
+            deconv_layers.append(
+                nn.Sequential(
+                    nn.ConvTranspose2d(num_features, num_features, kernel_size=3, padding=1),
+                    nn.ReLU(inplace=True)
+                )
+            )
+        deconv_layers.append(
+            nn.ConvTranspose2d(num_features, 1, kernel_size=3, stride=2, padding=1, output_padding=1)
+        )
 
+        self.conv_layers = nn.Sequential(*conv_layers)
+        self.deconv_layers = nn.Sequential(*deconv_layers)
+        self.relu = nn.ReLU(inplace=True)
 
-class MS_SSIM_L1_LOSS(nn.Module):
-    """
-    Some Code from https://github.com/psyrocloud/MS-SSIM_L1_LOSS
-    Paper "Loss Functions for Image Restoration With Neural Networks"
-    """
+    def forward(self, x):
+        residual = x
 
-    def __init__(self, device, data_range=1.0, alpha=0.04, weight=1., channel=1):
-        super(MS_SSIM_L1_LOSS, self).__init__()
-        k = (0.01, 0.03)
-        gaussian_sigmas = [0.5, 1.0, 2.0, 4.0, 8.0]
-        self.channel = channel
-        self.DR = data_range
-        self.C1 = (k[0] * data_range) ** 2
-        self.C2 = (k[1] * data_range) ** 2
-        self.pad = int(2 * gaussian_sigmas[-1])
-        self.alpha = alpha
-        self.weight = weight
-        filter_size = int(4 * gaussian_sigmas[-1] + 1)
-        g_masks = torch.zeros((self.channel * len(gaussian_sigmas), 1, filter_size, filter_size))
-        for idx, sigma in enumerate(gaussian_sigmas):
-            if self.channel == 1:
-                # only gray layer
-                g_masks[idx, 0, :, :] = self._f_special_gauss_2d(filter_size, sigma)
-            elif self.channel == 3:
-                # r0,g0,b0,r1,g1,b1,...,rM,gM,bM
-                g_masks[self.channel * idx + 0, 0, :, :] = self._f_special_gauss_2d(filter_size, sigma)
-                g_masks[self.channel * idx + 1, 0, :, :] = self._f_special_gauss_2d(filter_size, sigma)
-                g_masks[self.channel * idx + 2, 0, :, :] = self._f_special_gauss_2d(filter_size, sigma)
-            else:
-                raise ValueError
-        self.g_masks = g_masks.to(device=device)
+        conv_feats = []
+        for i in range(self.num_layers):
+            x = self.conv_layers[i](x)
+            if (i + 1) % 2 == 0 and len(conv_feats) < math.ceil(self.num_layers / 2) - 1:
+                conv_feats.append(x)
 
-    @staticmethod
-    def _f_special_gauss_1d(size, sigma):
-        """Create 1-D gauss kernel
-        Args:
-            size (int): the size of gauss kernel
-        Returns:
-            torch.Tensor: 1D kernel (size)
-        """
-        coords = torch.arange(size).to(dtype=torch.float)
-        coords -= size // 2
-        g = torch.exp(-(coords ** 2) / (2 * sigma ** 2))
-        g /= g.sum()
-        return g.reshape(-1)
+        conv_feats_idx = 0
+        for i in range(self.num_layers):
+            x = self.deconv_layers[i](x)
+            if (i + 1 + self.num_layers) % 2 == 0 and conv_feats_idx < len(conv_feats):
+                conv_feat = conv_feats[-(conv_feats_idx + 1)]
+                conv_feats_idx += 1
+                x = x + conv_feat
+                x = self.relu(x)
 
-    def _f_special_gauss_2d(self, size, sigma):
-        """Create 2-D gauss kernel
-        Args:
-            size (int): the size of gauss kernel
-            sigma ([float]): sigma of normal distribution
-        Returns:
-            torch.Tensor: 2D kernel (size x size)
-        """
-        gaussian_vec = self._f_special_gauss_1d(size, sigma)
-        return torch.outer(gaussian_vec, gaussian_vec)
-
-    def forward(self, x, y):
-        b, c, h, w = x.shape
-        assert c == self.channel
-        mu_x = F.conv2d(x, self.g_masks, groups=c, padding=self.pad)
-        mu_y = F.conv2d(y, self.g_masks, groups=c, padding=self.pad)
-
-        mu_x2 = mu_x * mu_x
-        mu_y2 = mu_y * mu_y
-        mu_xy = mu_x * mu_y
-
-        sigma_x2 = F.conv2d(x * x, self.g_masks, groups=c, padding=self.pad) - mu_x2
-        sigma_y2 = F.conv2d(y * y, self.g_masks, groups=c, padding=self.pad) - mu_y2
-        sigma_xy = F.conv2d(x * y, self.g_masks, groups=c, padding=self.pad) - mu_xy
-
-        # l(j), cs(j) in MS-SSIM
-        _l = (2 * mu_xy + self.C1) / (mu_x2 + mu_y2 + self.C1)  # [B, 15, H, W]
-        cs = (2 * sigma_xy + self.C2) / (sigma_x2 + sigma_y2 + self.C2)
-
-        if self.channel == 3:
-            l_m = _l[:, -1, :, :] * _l[:, -2, :, :] * _l[:, -3, :, :]
-        else:
-            l_m = _l[:, -1, :, :]
-
-        # l_m = _l[:, -1, :, :] * _l[:, -2, :, :] * _l[:, -3, :, :]
-        p_ics = cs.prod(dim=1)
-
-        loss_ms_ssim = 1 - l_m * p_ics  # [B, H, W]
-
-        loss_l1 = F.l1_loss(x, y, reduction='none')  # [B, 3, H, W]
-        # average l1 loss in 3 channels
-        gaussian_l1 = F.conv2d(loss_l1, self.g_masks.narrow(dim=0, start=-self.channel, length=self.channel),
-                               groups=c, padding=self.pad).mean(1)  # [B, H, W]
-
-        loss_mix = self.alpha * loss_ms_ssim + (1 - self.alpha) * gaussian_l1 / self.DR
-        return self.weight * loss_mix.mean()
+        x += residual
+        x = torch.tanh(x)
+        return x
 
 
 class MeanShift(nn.Conv2d):
@@ -168,3 +112,56 @@ class VGG_Loss(nn.Module):
 
         loss = F.mse_loss(vgg_hr, vgg_sr)
         return self.weight * loss
+
+
+class FeatureReconstructionLoss(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.sub_nets = []
+        loss_net = DAE()
+        self.dae_path = os.path.join(self.__get_path(), 'pretrained_models/DAE.pth')
+        loss_net.load_state_dict(
+            torch.load(self.dae_path)
+        )
+
+        encoder = list(loss_net.children())[0]
+        layers = [_ for _ in range(5)]
+        self.layers = layers
+        for layer in layers:
+            list_of_layers = list(encoder)[:layer]
+            final_layer = [encoder[layer][0]]
+            sub_net = nn.Sequential(*(list_of_layers + final_layer)).float().eval().cuda()
+            for param in sub_net.parameters():
+                param.requires_grad = False
+            self.sub_nets.append(sub_net)
+        self.loss = nn.MSELoss()
+
+    @staticmethod
+    def __get_path():
+        cur_dir = os.path.dirname(os.path.abspath(__file__))
+        return cur_dir
+
+    def forward(self, out_images, target_images):
+        feature_loss = torch.tensor([0.0]).float().cuda()
+        for net in self.sub_nets:
+            pred_feat = net(out_images)
+            target_feat = net(target_images)
+            loss = self.loss(pred_feat, target_feat)
+            feature_loss += loss
+        return feature_loss
+
+
+class Loss(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.l1_loss = nn.L1Loss()
+        self.vgg_loss = VGG_Loss(weight=0.0005, layer=8)
+        self.feature_loss = FeatureReconstructionLoss()
+
+    def forward(self, out_images, target_images):
+        image_loss = self.l1_loss(out_images, target_images)
+        feature_loss = sum(self.feature_loss(out_images, target_images))
+        vgg_sr = out_images.repeat([1, 3, 1, 1])
+        vgg_hr = target_images.repeat([1, 3, 1, 1])
+        perception_loss = self.vgg_loss(vgg_sr, vgg_hr)
+        return image_loss + feature_loss + perception_loss

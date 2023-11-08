@@ -23,12 +23,12 @@ set_log_config()
 def __down_sample(in_file, _low_res, _ratio):
     data = np.load(in_file, allow_pickle=True)
     hic = data['hic']
-    compact_idx = data['compact']
+    # compact_idx = data['compact']
     chr_name = os.path.basename(in_file).split('_')[0]
     out_file = os.path.join(os.path.dirname(in_file), f'{chr_name}_{_low_res}.npz')
     down_hic = down_sampling(hic, _ratio)
 
-    np.savez_compressed(out_file, hic=down_hic, compact=compact_idx, ratio=_ratio)
+    np.savez_compressed(out_file, hic=down_hic, ratio=_ratio)
     logging.debug(f'Saving file:{out_file}')
 
 

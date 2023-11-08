@@ -64,6 +64,7 @@ def __model_predict_without_target(model, _loader, ckpt_file):
             lr, inds = batch
             lr = lr.to(device)
             sr = net(lr)
+            # sr = lr
             predict_bar.set_description(
                 desc=f"[Predicting in Test set]")
             predict_data = sr.to('cpu').numpy()
@@ -101,8 +102,7 @@ def __model_predict(model, _loader, ckpt_file):
             lr = lr.to(device)
             hr = hr.to(device)
             sr = net(lr)
-            # sr = lr
-
+            # sr = hr
             batch_mse = ((sr - hr) ** 2).mean()
             val_res['mse'] += batch_mse * batch_size
             val_res['ssims'] += ssim(sr, hr) * batch_size

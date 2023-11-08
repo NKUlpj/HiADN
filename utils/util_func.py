@@ -115,7 +115,7 @@ def get_d_loss_fn(_model_name):
 def get_loss_fn(_model_name, device='cpu'):
     if _model_name == 'HiADN':
         logging.debug('Using HiADN_Loss')
-        loss = HiADN_Loss.LossL(device=device)
+        loss = HiADN_Loss.Loss()
     elif _model_name == 'DeepHiC':
         logging.debug('Using DeepHiC_Loss')
         loss = DeepHiC_Loss.GeneratorLoss()

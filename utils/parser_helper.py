@@ -223,7 +223,7 @@ def matrix_prepare_parser():
         description=textwrap.dedent('''\
             A tools to prepare data for predict.
             ----------------------------------------------------------------------------------------------------------
-            Use example : python ./datasets/split_matrix.py -hr 10kb -chunk 64 -stride 64 -bound 201 -c GM12878
+            Use example : python ./datasets/split_matrix.py -hr 10kb -s SV_test -chunk 64 -stride 64 -bound 201 -c GM12878
             ----------------------------------------------------------------------------------------------------------
         '''
                                     ),
@@ -244,7 +244,7 @@ def matrix_prepare_parser():
         dest='high_res',
         help='Required: High resolution specified[example:10kb]',
         default='10kb',
-        choices=res_map.keys(),
+        # choices=res_map.keys(),
         required=True
     )
     method_args = parser.add_argument_group('Method Arguments')
@@ -263,6 +263,13 @@ def matrix_prepare_parser():
         default=64,
         type=int,
         required=True
+    )
+    method_args.add_argument(
+        '-s',
+        dest='dataset',
+        help='Required: Dataset for train/valid/predict',
+        default='train',
+        # choices=['K562_test', 'mESC_test', 'train', 'valid', 'GM12878_test'],
     )
     method_args.add_argument(
         '-bound',

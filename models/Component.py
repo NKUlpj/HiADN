@@ -22,18 +22,18 @@ class HiFM(nn.Module):
         self.k = k
         self.net = nn.Sequential(
             nn.AvgPool2d(kernel_size=self.k, stride=self.k),
-            nn.Conv2d(channels, channels, 3, padding='same'),
-            nn.GELU(),
+            # nn.Conv2d(channels, channels, 3, padding='same'),
+            # nn.LeakyReLU(),
             nn.Upsample(scale_factor=self.k, mode='nearest')
         )
-        self.attn = HiCBAM(channels * 2)
+        # self.attn = HiCBAM(channels * 2)
         self.out = nn.Conv2d(channels * 2, channels // 2, 1, padding='same')
 
     def forward(self, x):
         tl = self.net(x)
         tl = x - tl
         x = torch.cat((x, tl), 1)
-        x = self.attn(x)
+        # x = self.attn(x)
         x = self.out(x)
         return x
 
@@ -41,7 +41,6 @@ class HiFM(nn.Module):
 class HiAB(nn.Module):
     def __init__(self, channels):
         super(HiAB, self).__init__()
-        _hidden_channels = channels // 2
 
         self.hifm1 = HiFM(channels)
         self.c1_r = conv_layer(channels, channels, 3)
@@ -79,4 +78,4 @@ class HiAB(nn.Module):
         out = torch.cat([distilled_c1, distilled_c2, distilled_c3, distilled_c4], dim=1)
         out_fused = self.attn(self.c5(out))
         # there is no global residual connection
-        return out_fused + x
+        return F.relu(out_fused)
