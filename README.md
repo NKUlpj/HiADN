@@ -32,11 +32,6 @@
 * HiFM
 * LKA
 
-![Compute Times](./img/Compare_Params.png)
-
-![TAD Detection](./img/TAD_Compare.png)
-
-
 * [👥 User Guide](#-user-guide)
    - [1. Install](#1-installation)
    - [2. Requires](#2-requires)
@@ -187,11 +182,11 @@ Datasets_NPZ
 > This adds down_sampled HR data to `$root_dir/mat/<cell_line_name>` as `chrN_[LR].npz`.
 
 ```text
-usage: down_sample.py -c CELL_LINE -hr {5kb,10kb,25kb,50kb,100kb,250kb,500kb,1mb} -lr LOW_RES -r RATIO [--help]
+usage: down_sample.py -c CELL_LINE -hr {5kb,10kb,25kb,50kb,100kb,250kb,500kb,1mb} -r RATIO [--help]
 
 A tools to down sample data from high resolution data.
 ----------------------------------------------------------------------
-Use example : python ./data/down_sample.py -hr 10kb -lr 40kb -r 16 -c GM12878
+Use example : python ./datasets/down_sample.py -hr 10kb -r 16 -c GM12878
 ----------------------------------------------------------------------
 
 optional arguments:
@@ -201,7 +196,6 @@ Required Arguments:
   -c CELL_LINE          Required: Cell line for analysis[example:GM12878]
   -hr {5kb,10kb,25kb,50kb,100kb,250kb,500kb,1mb}
                         Required: High resolution specified[example:10kb]
-  -lr LOW_RES           Required: Low resolution specified[example:40kb]
   -r RATIO              Required: The ratio of down sampling[example:16]
 
 ```
@@ -222,7 +216,7 @@ Datasets_NPZ
 ├── mat
 │   ├── K562
 │   │   ├── chr1_10kb.npz
-│   │   ├── chr1_40kb.npz
+│   │   ├── chr1_10kb_16ds.npz
 │   │   └── ...
 │   ├── GM12878
 │   └── CH12-LX
@@ -243,11 +237,11 @@ set_dict = {'K562_test': [3, 11, 19, 21],
 ```
 
 ```text
-usage: split.py -c CELL_LINE -hr {5kb,10kb,25kb,50kb,100kb,250kb,500kb,1mb} -lr LOW_RES [-s {K562_test,mESC_test,train,valid,GM12878_test}] -chunk CHUNK -stride STRIDE -bound BOUND [--help]
+usage: split.py -c CELL_LINE -hr {5kb,10kb,25kb,50kb,100kb,250kb,500kb,1mb} -r RATIO [-s DATASET] -chunk CHUNK -stride STRIDE -bound BOUND [--help]
 
 A tools to divide data for train, predict and test.
 ----------------------------------------------------------------------------------------------------------
-Use example : python ./data/split.py -hr 10kb -lr 40kb -s train -chunk 64 -stride 64 -bound 201 -c GM12878
+Use example : python ./datasets/split.py -hr 10kb -r 16 -s train -chunk 64 -stride 64 -bound 201 -c GM12878
 ----------------------------------------------------------------------------------------------------------
 
 optional arguments:
@@ -257,9 +251,8 @@ Required Arguments:
   -c CELL_LINE          Required: Cell line for analysis[example:GM12878]
   -hr {5kb,10kb,25kb,50kb,100kb,250kb,500kb,1mb}
                         Required: High resolution specified[example:10kb]
-  -lr LOW_RES           Required: Low resolution specified[example:40kb]
-  -s {K562_test,mESC_test,train,valid,GM12878_test}
-                        Required: Dataset for train/valid/predict
+  -r RATIO              Required: down_sampled ration[example:16]
+  -s DATASET            Required: Dataset for train/valid/predict
 
 Method Arguments:
   -chunk CHUNK          Required: chunk size for dividing[example:64]

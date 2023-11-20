@@ -30,10 +30,6 @@ def __data_divider(_n, h_file, d_file, _chunk=40, _stride=40, _bound=201, _lr_cu
     # compact_idx = high_data['compact']
     full_size = high_hic.shape[0]
 
-    # Compacting
-    # high_hic = compact_matrix(high_hic, compact_idx)
-    # down_hic = compact_matrix(down_hic, compact_idx)
-
     # Clamping
     high_hic = np.minimum(_hr_cutoff, high_hic)
     down_hic = np.minimum(_lr_cutoff, down_hic)

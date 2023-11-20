@@ -138,7 +138,9 @@ def __train(model, model_name, train_loader, valid_loader, max_epochs, verbose):
                 # loss
                 val_res['g_loss'] += batch_size * g_loss.item()
                 batch_mse = ((sr - hr) ** 2).mean()
-                val_res['mse'] += batch_mse * batch_size
+
+                if batch_mse < 0.1:
+                    val_res['mse'] += batch_mse * batch_size
                 val_res['ssims'] += batch_size * ssim(sr, hr)
                 val_res['psnr'] = 10 * log10(1 / (val_res['mse'] / val_res['samples']))
                 val_res['dists'] += __eval_dists(sr, hr, dists_fn)
@@ -289,7 +291,8 @@ def __train_gan(_net_g, _net_d, model_name, train_loader, valid_loader, max_epoc
                 # loss
                 val_res['g_loss'] += batch_size * g_loss.item()
                 batch_mse = ((sr - hr) ** 2).mean()
-                val_res['mse'] += batch_mse * batch_size
+                if batch_mse < 0.1:
+                    val_res['mse'] += batch_mse * batch_size
                 val_res['ssims'] += batch_size * ssim(sr, hr)
                 val_res['psnr'] = 10 * log10(1 / (val_res['mse'] / val_res['samples']))
                 val_res['dists'] += __eval_dists(sr, hr, dists_fn)

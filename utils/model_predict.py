@@ -17,7 +17,6 @@ from .io_helper import together, spread_matrix
 from .ssim import ssim
 from .util_func import get_model, loader, get_device
 from .config import set_log_config, root_dir
-from .genome_disco import compute_reproducibility
 import warnings
 warnings.filterwarnings("ignore")
 import logging
@@ -104,8 +103,10 @@ def __model_predict(model, _loader, ckpt_file):
             sr = net(lr)
             # sr = hr
             batch_mse = ((sr - hr) ** 2).mean()
-            val_res['mse'] += batch_mse * batch_size
+            if batch_mse < 0.1:
+                val_res['mse'] += batch_mse * batch_size
             val_res['ssims'] += ssim(sr, hr) * batch_size
+
             val_res['psnr'] = 10 * log10(1 / (val_res['mse'] / val_res['samples']))
             val_res['dists'] += __eval_dists(sr, hr, dists_fn)
             _avg_dists = val_res['dists'] / val_res['samples']
